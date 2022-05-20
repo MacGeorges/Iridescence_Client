@@ -7,7 +7,14 @@ public class ClientManager : MonoBehaviour
 {
     void Start()
     {
-        Thread listenerThread = new Thread(AsynchronousClient.StartClient);
-        listenerThread.Start();
+        AsynchronousClient.StartClient();
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            ServersManager.instance.connectedServers[0].Send("Client just pressed a key!<EOF>");
+        }
     }
 }
