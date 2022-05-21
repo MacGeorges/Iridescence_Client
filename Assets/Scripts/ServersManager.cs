@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ServersManager : MonoBehaviour
 {
-    public List<ServerHandler> connectedServers;
+    public List<ServerHandler> connectedServers = new List<ServerHandler>();
 
     public static ServersManager instance;
 

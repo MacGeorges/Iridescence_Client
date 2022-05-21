@@ -18,15 +18,13 @@ public class StateObject
 
 public class AsynchronousClient
 {
-    private const int port = 11000;
-
     public static void StartClient()
     {
         try
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
 
             Socket client = new Socket(ipAddress.AddressFamily,
                 SocketType.Stream, ProtocolType.Tcp);
@@ -52,6 +50,9 @@ public class AsynchronousClient
             {
 
                 ServerHandler tmpSH = new ServerHandler();
+
+                tmpSH.user = new NetworkUser();
+                tmpSH.user.userType = UserType.server;
 
                 tmpSH.state = new StateObject();
                 tmpSH.state.workSocket = client;

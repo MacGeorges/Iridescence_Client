@@ -5,16 +5,13 @@ using UnityEngine;
 
 public class ClientManager : MonoBehaviour
 {
+    public NetworkUser user;
+
+    public static ClientManager instance;
+
     void Start()
     {
+        instance = this;
         AsynchronousClient.StartClient();
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            ServersManager.instance.connectedServers[0].Send("Client just pressed a key!<EOF>");
-        }
     }
 }
