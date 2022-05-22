@@ -15,7 +15,7 @@ public class ServerHandler
 
     public void Send(NetworkRequest newRequest)
     {
-        byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(newRequest));
+        byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(newRequest) + "<EOF>");
 
         state.workSocket.BeginSend(byteData, 0, byteData.Length, 0,
             new AsyncCallback(SendCallback), state.workSocket);
@@ -59,16 +59,9 @@ public class ServerHandler
             {
                 message = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
 
-                //Debug.Log("Server message : " + message);
-
                 if (message.Contains("<EOF>"))
                 {
-                    // All the data has been read from the
-                    // client.
-
                     string[] messages = message.Split("<EOF>");
-
-                    //Debug.Log("sub messages : " + messages.Length);
 
                     foreach (string subMessage in messages)
                     {
@@ -76,10 +69,9 @@ public class ServerHandler
 
                         if (string.IsNullOrEmpty(cleanSubMessage)) { continue; }
 
-                        //Debug.Log("cleanSubMessage : " + cleanSubMessage);
-
                         HandleRequest(JsonUtility.FromJson<NetworkRequest>(cleanSubMessage));
                     }
+
                     state.buffer = new byte[StateObject.BufferSize];
                     state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReceiveCallback), state);
