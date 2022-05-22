@@ -186,6 +186,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChatManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4612139853914973537, guid: f9f9b5f2c9af10e46b1b42ddca5f587e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4612139853914973541, guid: f9f9b5f2c9af10e46b1b42ddca5f587e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -675,7 +679,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd34914d24264fb4db7d43a9a2c6a9a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pendingElements: []
+  pendingElementsAdd: []
+  pendingElementsRemove: []
+  pendingElementsUpdate: []
+  currentElements: []
 --- !u!4 &1984985402
 Transform:
   m_ObjectHideFlags: 0

@@ -108,6 +108,7 @@ public class ServerHandler
     private void HandleRequest(NetworkRequest request)
     {
         Debug.Log("Recieved request " + request.requestType);
+        Debug.Log("Serialized Data : " + request.serializedRequest);
         switch (request.requestType)
         {
             case RequestType.ping:
@@ -121,7 +122,8 @@ public class ServerHandler
             case RequestType.regionChange:
                 break;
             case RequestType.objectUpdate:
-                EnvironmentManager.instance.pendingElements.Add(JsonUtility.FromJson<RegionElement>(request.serializedRequest));
+                Debug.Log("objectUpdate : " + JsonUtility.FromJson<ObjectRequest>(request.serializedRequest));
+                EnvironmentManager.instance.HandleObjectRequest(JsonUtility.FromJson<ObjectRequest>(request.serializedRequest));
                 break;
             case RequestType.chat:
                 ChatManager.instance.ChatRecieved(request);

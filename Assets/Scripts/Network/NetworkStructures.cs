@@ -10,8 +10,14 @@ public struct NetworkRequest
 {
     public NetworkUser sender;
     public RequestType requestType;
-    //public RequestDescriptor requestDescriptor;
     public string serializedRequest;
+
+    public NetworkRequest(NetworkUser newSender, RequestType newRequestType, string requestContent)
+    {
+        sender = newSender;
+        requestType = newRequestType;
+        serializedRequest = requestContent;
+    }
 }
 
 [Serializable]
@@ -31,9 +37,24 @@ public enum UserType
 }
 
 [Serializable]
-public struct RequestDescriptor
+public struct ObjectRequest
 {
-    public RequestType requestType;
+    public ObjectRequestType requestType;
+    public RegionElement element;
+
+    public ObjectRequest(ObjectRequestType newRequestType, RegionElement newElement)
+    {
+        requestType = newRequestType;
+        element = newElement;
+    }
+}
+
+[Serializable]
+public enum ObjectRequestType
+{
+    add,
+    remove,
+    update
 }
 
 [Serializable]
