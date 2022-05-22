@@ -67,16 +67,30 @@ public class ServerHandler
 
                 Debug.Log("Server message : " + message);
 
-                if (message.IndexOf("<EOF>") > -1)
+                if (message.Contains("<EOF>"))
                 {
                     // All the data has been read from the
                     // client.
-                    message = message.Replace("<EOF>", "");
-                    HandleRequest(JsonUtility.FromJson<NetworkRequest>(message));
 
-                    //state.buffer = new byte[StateObject.BufferSize];
-                    //state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    //new AsyncCallback(ReceiveCallback), state);
+                    string[] messages = message.Split("<EOF>");
+
+                    //Debug.Log("sub messages : " + messages.Length);
+
+                    foreach (string subMessage in messages)
+                    {
+                        string cleanSubMessage = subMessage.Replace("<EOF>", "");
+
+                        if (string.IsNullOrEmpty(cleanSubMessage)) { continue; }
+
+                        //Debug.Log("cleanSubMessage : " + cleanSubMessage);
+
+                        HandleRequest(JsonUtility.FromJson<NetworkRequest>(cleanSubMessage));
+                    }
+                    state.buffer = new byte[StateObject.BufferSize];
+                    state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), state);
+
+                    return;
                 }
 
                 // Not all data received. Get more.  
