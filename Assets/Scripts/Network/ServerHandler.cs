@@ -75,6 +75,8 @@ public class ServerHandler
                     HandleRequest(JsonUtility.FromJson<NetworkRequest>(message));
 
                     //state.buffer = new byte[StateObject.BufferSize];
+                    //state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    //new AsyncCallback(ReceiveCallback), state);
                 }
 
                 // Not all data received. Get more.  

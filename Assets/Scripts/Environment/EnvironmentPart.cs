@@ -17,6 +17,7 @@ public class EnvironmentPart : MonoBehaviour
 
     private void SpawnPart(string partData)
     {
+        Debug.Log("Spawn Part : " + partData);
         Part part = JsonUtility.FromJson<Part>(partData);
 
         GameObject BundlerLoaderHelper = new GameObject();

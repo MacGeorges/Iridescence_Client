@@ -22,5 +22,7 @@ public class EnvironmentManager : MonoBehaviour
             EnvironmentPart environmentPart = regionElement.AddComponent<EnvironmentPart>();
             environmentPart.Init(regionRegionElement);
         }
+
+        pendingElements = new List<RegionElement>();
     }
 }
