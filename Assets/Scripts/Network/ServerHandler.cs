@@ -65,12 +65,22 @@ public class ServerHandler
             {
                 message = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
 
-                //Debug.Log("Server message : " + message);
+                Debug.Log("Server message : " + message);
 
-                HandleRequest(JsonUtility.FromJson<NetworkRequest>(message));
+                if (message.IndexOf("<EOF>") > -1)
+                {
+                    // All the data has been read from the
+                    // client.
+                    message = message.Replace("<EOF>", "");
+                    HandleRequest(JsonUtility.FromJson<NetworkRequest>(message));
 
+                    //state.buffer = new byte[StateObject.BufferSize];
+                }
+
+                // Not all data received. Get more.  
                 state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state);
+                new AsyncCallback(ReceiveCallback), state);
+
             }
         }
         catch (Exception e)
@@ -81,7 +91,7 @@ public class ServerHandler
 
     private void HandleRequest(NetworkRequest request)
     {
-        //Debug.Log("Recieved " + request.requestType);
+        Debug.Log("Recieved request " + request.requestType);
         switch (request.requestType)
         {
             case RequestType.ping:
@@ -95,6 +105,7 @@ public class ServerHandler
             case RequestType.regionChange:
                 break;
             case RequestType.objectUpdate:
+                EnvironmentManager.instance.pendingElements.Add(JsonUtility.FromJson<RegionElement>(request.serializedRequest));
                 break;
             case RequestType.chat:
                 ChatManager.instance.ChatRecieved(request);

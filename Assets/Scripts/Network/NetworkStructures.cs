@@ -46,3 +46,10 @@ public enum RequestType
     chat,
     playerAction
 }
+
+[Serializable]
+public enum RequestMethod
+{
+    Get,
+    Post
+}
