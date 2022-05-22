@@ -13,13 +13,8 @@ public class ServerHandler
 
     public bool authenticated;
 
-    public void Send(RequestType requestType, string data = "")
+    public void Send(NetworkRequest newRequest)
     {
-        NetworkRequest newRequest = new NetworkRequest();
-        newRequest.sender = ClientManager.instance.user;
-        newRequest.requestType = requestType;
-        newRequest.serializedRequest = data;
-
         byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(newRequest));
 
         state.workSocket.BeginSend(byteData, 0, byteData.Length, 0,
@@ -31,7 +26,7 @@ public class ServerHandler
         try
         {
             int bytesSent = state.workSocket.EndSend(ar);
-            Debug.Log("Sent " + bytesSent + " bytes to server.");
+            //Debug.Log("Sent " + bytesSent + " bytes to server.");
         }
         catch (Exception e)
         {
@@ -54,7 +49,6 @@ public class ServerHandler
 
     private void ReceiveCallback(IAsyncResult ar)
     {
-        Debug.Log("ReceiveCallback");
         try
         {
             string message = string.Empty;
@@ -65,7 +59,7 @@ public class ServerHandler
             {
                 message = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
 
-                Debug.Log("Server message : " + message);
+                //Debug.Log("Server message : " + message);
 
                 if (message.Contains("<EOF>"))
                 {
@@ -107,8 +101,8 @@ public class ServerHandler
 
     private void HandleRequest(NetworkRequest request)
     {
-        Debug.Log("Recieved request " + request.requestType);
-        Debug.Log("Serialized Data : " + request.serializedRequest);
+        //Debug.Log("Recieved request " + request.requestType);
+        //Debug.Log("Serialized Data : " + request.serializedRequest);
         switch (request.requestType)
         {
             case RequestType.ping:
@@ -117,12 +111,12 @@ public class ServerHandler
             case RequestType.login:
                 user.userID = request.sender.userID;
                 authenticated = true;
-                Send(RequestType.login);
+                request.sender = ClientManager.instance.user;
+                Send(request);
                 break;
             case RequestType.regionChange:
                 break;
             case RequestType.objectUpdate:
-                Debug.Log("objectUpdate : " + JsonUtility.FromJson<ObjectRequest>(request.serializedRequest));
                 EnvironmentManager.instance.HandleObjectRequest(JsonUtility.FromJson<ObjectRequest>(request.serializedRequest));
                 break;
             case RequestType.chat:

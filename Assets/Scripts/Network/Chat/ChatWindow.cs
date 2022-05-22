@@ -37,7 +37,12 @@ public class ChatWindow : MonoBehaviour
 
     public void SendMessage()
     {
-        userRef.Send(RequestType.chat, inputField.text);
+        NetworkRequest request = new NetworkRequest();
+        request.sender = ClientManager.instance.user;
+        request.requestType = RequestType.chat;
+        request.serializedRequest = inputField.text;
+
+        userRef.Send(request);
         DisplayMessage(inputField.text, true);
         inputField.text = string.Empty;
     }

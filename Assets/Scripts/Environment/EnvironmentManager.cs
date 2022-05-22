@@ -50,20 +50,16 @@ public class EnvironmentManager : MonoBehaviour
 
     public void HandleObjectRequest(ObjectRequest ObjectRequest)
     {
-        Debug.Log("ObjectRequest " + ObjectRequest.requestType);
         switch (ObjectRequest.requestType)
         {
             case ObjectRequestType.add:
                 pendingElementsAdd.Add(ObjectRequest.element);
-                Debug.Log("pendingElementsAdded");
                 break;
             case ObjectRequestType.remove:
                 pendingElementsRemove.Add(ObjectRequest.element);
-                Debug.Log("pendingElementsRemoved");
                 break;
             case ObjectRequestType.update:
                 pendingElementsUpdate.Add(ObjectRequest.element);
-                Debug.Log("pendingElementsUpdated");
                 break;
         }
     }

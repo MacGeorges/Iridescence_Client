@@ -21,6 +21,13 @@ public struct NetworkRequest
 }
 
 [Serializable]
+public enum RequestMethod
+{
+    Get,
+    Post
+}
+
+[Serializable]
 public struct NetworkUser
 {
     public UserType userType;
@@ -34,6 +41,17 @@ public enum UserType
     server,
     client,
     bot
+}
+
+[Serializable]
+public enum RequestType
+{
+    ping,
+    login,
+    regionChange,
+    objectUpdate,
+    chat,
+    playerAction
 }
 
 [Serializable]
@@ -58,19 +76,12 @@ public enum ObjectRequestType
 }
 
 [Serializable]
-public enum RequestType
+public struct PlayerActionRequest
 {
-    ping,
-    login,
-    regionChange,
-    objectUpdate,
-    chat,
-    playerAction
-}
+    public SerializableTransform spatialData;
 
-[Serializable]
-public enum RequestMethod
-{
-    Get,
-    Post
+    public PlayerActionRequest(SerializableTransform newspatialData)
+    {
+        spatialData = newspatialData;
+    }
 }
