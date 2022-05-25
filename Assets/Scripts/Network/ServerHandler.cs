@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
@@ -9,86 +10,50 @@ using UnityEngine;
 public class ServerHandler
 {
     public NetworkUser user;
-    public StateObject state;
+    IPEndPoint remoteEP;
 
     public bool authenticated;
 
-    public void Send(NetworkRequest newRequest)
+    public void StartListening()
     {
-        byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(newRequest) + "<EOF>");
+        remoteEP = new IPEndPoint(user.userIP, user.userPort);
+        Debug.Log("EndPoint created : " + remoteEP);
 
-        state.workSocket.BeginSend(byteData, 0, byteData.Length, 0,
-            new AsyncCallback(SendCallback), state.workSocket);
-    }
+        //IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 11000); // endpoint where server is listening
+        //client.Connect(ep);
 
-    private void SendCallback(IAsyncResult ar)
-    {
-        try
+        NetworkRequest request = new NetworkRequest();
+        request.sender = ClientManager.instance.user;
+        request.requestType = RequestType.login;
+        request.serializedRequest = string.Empty;
+
+        Send(request);
+
+        while (true)
         {
-            int bytesSent = state.workSocket.EndSend(ar);
-            //Debug.Log("Sent " + bytesSent + " bytes to server.");
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
-    }
+            byte[] data = AsynchronousClient.client.Receive(ref remoteEP);
 
-    public void Receive()
-    {
-        try
-        {
-            state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReceiveCallback), state);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
-    }
+            string message = Encoding.ASCII.GetString(data);
 
-    private void ReceiveCallback(IAsyncResult ar)
-    {
-        try
-        {
-            string message = string.Empty;
+            //Debug.Log("receive data from " + remoteEP.ToString() + " : " + message);
 
-            int bytesRead = state.workSocket.EndReceive(ar);
-
-            if (bytesRead > 0)
+            if (message.Contains("<EOR>"))
             {
-                message = Encoding.ASCII.GetString(state.buffer, 0, bytesRead);
 
-                if (message.Contains("<EOF>"))
-                {
-                    string[] messages = message.Split("<EOF>");
+                message = message.Replace("<EOR>", "");
 
-                    foreach (string subMessage in messages)
-                    {
-                        string cleanSubMessage = subMessage.Replace("<EOF>", "");
-
-                        if (string.IsNullOrEmpty(cleanSubMessage)) { continue; }
-
-                        HandleRequest(JsonUtility.FromJson<NetworkRequest>(cleanSubMessage));
-                    }
-
-                    state.buffer = new byte[StateObject.BufferSize];
-                    state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state);
-
-                    return;
-                }
-
-                // Not all data received. Get more.  
-                state.workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReceiveCallback), state);
-
+                HandleRequest(JsonUtility.FromJson<NetworkRequest>(message));
             }
         }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
+    }
+
+    public void Send(NetworkRequest request)
+    {
+        byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(request) + "<EOR>");
+
+        //Debug.Log("Sending message to server : " + JsonUtility.ToJson(request));
+
+        AsynchronousClient.client.Send(byteData, byteData.Length, remoteEP);
     }
 
     private void HandleRequest(NetworkRequest request)

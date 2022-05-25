@@ -45,7 +45,7 @@ public class ChatManager : MonoBehaviour
     {
         foreach (ChatWindow chat in chats)
         {
-            if(chat.userRef.user.userID == message.sender.userID)
+            if(chat.userRef.user == message.sender)
             {
                 chat.pendingMessages.Add(message);
             }

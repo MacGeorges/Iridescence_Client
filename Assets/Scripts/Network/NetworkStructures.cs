@@ -32,7 +32,19 @@ public struct NetworkUser
 {
     public UserType userType;
     public string userID;
+    public long userIP;
+    public int userPort;
     public bool isAuthenticated;
+
+    public static bool operator ==(NetworkUser c1, NetworkUser c2)
+    {
+        return (c1.userIP == c2.userIP && c1.userPort == c2.userPort);
+    }
+
+    public static bool operator !=(NetworkUser c1, NetworkUser c2)
+    {
+        return (c1.userIP != c2.userIP || c1.userPort != c2.userPort);
+    }
 }
 
 [Serializable]

@@ -411,6 +411,8 @@ MonoBehaviour:
   user:
     userType: 1
     userID: Client_0
+    userIP: 0
+    userPort: 0
     isAuthenticated: 0
 --- !u!4 &247192061
 Transform:
