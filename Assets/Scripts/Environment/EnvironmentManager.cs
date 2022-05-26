@@ -8,6 +8,7 @@ public class EnvironmentManager : MonoBehaviour
     public List<RegionElement> pendingElementsRemove = new List<RegionElement>();
     public List<RegionElement> pendingElementsUpdate = new List<RegionElement>();
 
+    public List<EnvironmentPart> elementsLibrary = new List<EnvironmentPart>();
     public List<EnvironmentPart> currentElements = new List<EnvironmentPart>();
 
     public static EnvironmentManager instance;
@@ -24,12 +25,41 @@ public class EnvironmentManager : MonoBehaviour
 
         foreach (RegionElement regionAddElement in pendingElementsAddWork)
         {
-            GameObject regionElement = new GameObject();
-            regionElement.name = "regionElement - " + regionAddElement.elementID;
-            EnvironmentPart environmentPart = regionElement.AddComponent<EnvironmentPart>();
-            environmentPart.Init(regionAddElement);
+            EnvironmentPart libraryPart = elementsLibrary.Find(e => e.partData.modelID == regionAddElement.modelID);
 
-            currentElements.Add(environmentPart);
+            if (libraryPart)
+            {
+                if (libraryPart.objectRef)
+                {
+                    GameObject regionElement = new GameObject();
+                    regionElement.name = "regionElement - " + regionAddElement.elementID;
+
+                    EnvironmentPart environmentPart = regionElement.AddComponent<EnvironmentPart>();
+                    environmentPart.objectRef = Instantiate(libraryPart.objectRef);
+                    environmentPart.Init(regionAddElement);
+
+                    currentElements.Add(environmentPart);
+                }
+                else
+                {
+                    //Not Loaded yet. Let's add it for the next check
+                    pendingElementsAdd.Add(regionAddElement);
+                }
+            }
+            else
+            {
+                GameObject regionElement = new GameObject();
+                regionElement.name = "regionElement - " + regionAddElement.elementID;
+                EnvironmentPart environmentPart = regionElement.AddComponent<EnvironmentPart>();
+                environmentPart.Init(regionAddElement);
+
+                environmentPart.gameObject.SetActive(false);
+
+                elementsLibrary.Add(environmentPart);
+
+                //Model requested. Let's add the current spawn request it for the next check
+                pendingElementsAdd.Add(regionAddElement);
+            }
         }
 
         List<RegionElement> pendingElementsRemoveWork = new List<RegionElement>(pendingElementsRemove);

@@ -8,11 +8,20 @@ public class EnvironmentPart : MonoBehaviour
 
     public GameObject objectRef;
 
+    public AssetBundle assetBundleRef;
+
     public void Init(RegionElement newPartData)
     {
         partData = newPartData;
 
-        CloudWrapper.GetPartData(partData.modelID, SpawnPart);
+        if (!objectRef)
+        {
+            CloudWrapper.GetPartData(partData.modelID, SpawnPart);
+        }
+        else
+        {
+            SpawnedPart(objectRef);
+        }
     }
 
     private void SpawnPart(string partData)
