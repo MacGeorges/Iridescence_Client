@@ -19,7 +19,7 @@ public class ChatManager : MonoBehaviour
 
     public void UpdateChat()
     {
-        Debug.Log("UpdateChat");
+        //Debug.Log("UpdateChat");
 
         chats = new List<ChatWindow>();
 
@@ -28,7 +28,7 @@ public class ChatManager : MonoBehaviour
             Destroy(tmpTrans.gameObject);
         }
 
-        Debug.Log("Chat cleaned");
+        //Debug.Log("Chat cleaned");
 
         foreach (ServerHandler client in ServersManager.instance.connectedServers)
         {
@@ -38,7 +38,7 @@ public class ChatManager : MonoBehaviour
             chats.Add(chatWindow);
         }
 
-        Debug.Log("Chat populated");
+        //Debug.Log("Chat populated");
     }
 
     public void ChatRecieved(NetworkRequest message)

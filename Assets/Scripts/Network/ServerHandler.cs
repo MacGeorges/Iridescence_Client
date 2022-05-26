@@ -25,7 +25,7 @@ public class ServerHandler
         NetworkRequest request = new NetworkRequest();
         request.sender = ClientManager.instance.user;
         request.requestType = RequestType.login;
-        request.serializedRequest = string.Empty;
+        request.serializedRequest = JsonUtility.ToJson(user);
 
         Send(request);
 
@@ -66,10 +66,8 @@ public class ServerHandler
                 //Send(RequestType.ping);
                 break;
             case RequestType.login:
-                user.userID = request.sender.userID;
-                authenticated = true;
-                request.sender = ClientManager.instance.user;
-                Send(request);
+                ClientManager.instance.user = JsonUtility.FromJson<NetworkUser>(request.serializedRequest);
+                //Send(request);
                 break;
             case RequestType.regionChange:
                 break;
