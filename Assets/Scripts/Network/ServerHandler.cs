@@ -14,11 +14,14 @@ public class ServerHandler
 
     public bool authenticated;
 
-    public void StartListening()
+    public void Init()
     {
         remoteEP = new IPEndPoint(user.userIP, user.userPort);
         Debug.Log("EndPoint created : " + remoteEP);
+    }
 
+    public void StartListening()
+    {
         //IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 11000); // endpoint where server is listening
         //client.Connect(ep);
 
@@ -35,7 +38,7 @@ public class ServerHandler
 
             string message = Encoding.ASCII.GetString(data);
 
-            //Debug.Log("receive data from " + remoteEP.ToString() + " : " + message);
+            Debug.Log("receive data from " + remoteEP.ToString() + " : " + message);
 
             if (message.Contains("<EOR>"))
             {
@@ -51,15 +54,15 @@ public class ServerHandler
     {
         byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(request) + "<EOR>");
 
-        //Debug.Log("Sending message to server : " + JsonUtility.ToJson(request));
+        Debug.Log("Sending message to server : " + JsonUtility.ToJson(request));
 
         AsynchronousClient.client.Send(byteData, byteData.Length, remoteEP);
     }
 
     private void HandleRequest(NetworkRequest request)
     {
-        //Debug.Log("Recieved request " + request.requestType);
-        //Debug.Log("Serialized Data : " + request.serializedRequest);
+        Debug.Log("Recieved request " + request.requestType);
+        Debug.Log("Serialized Data : " + request.serializedRequest);
         switch (request.requestType)
         {
             case RequestType.ping:
