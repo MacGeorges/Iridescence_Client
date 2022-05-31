@@ -4,7 +4,8 @@ using UnityEngine;
 
 public static class CloudWrapper
 {
-    public static string Cloud_Access_URL = "http://127.0.0.1/Iridescence/Cloud_Access/";
+    public static string Cloud_Access_URL = "http://themonkeyparadox.com/Iridescence/Cloud_Access/";
+    //public static string Cloud_Access_URL = "http://127.0.0.1/Iridescence/Cloud_Access/";
     //public static string Assets_Storage_URL = "http://127.0.0.1/";
 
     public static void GetAllRegionElements(System.Action<string> Callback)

@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
         lastRotation = transform.rotation;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if ((transform.position != lastPosition) || (transform.rotation != lastRotation))
         {
