@@ -50,7 +50,7 @@ public class ServerHandler
         }
     }
 
-    public void Send(NetworkRequest request)
+    public void Send(NetworkRequest request, bool reliable = false)
     {
         byte[] byteData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(request) + "<EOR>");
 
