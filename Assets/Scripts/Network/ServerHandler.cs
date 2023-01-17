@@ -22,9 +22,7 @@ public class ServerHandler
 
     public void StartListening()
     {
-        //IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 11000); // endpoint where server is listening
-        //client.Connect(ep);
-
+        Debug.Log("Start Listening");
         NetworkRequest request = new NetworkRequest();
         request.sender = ClientManager.instance.user;
         request.requestType = RequestType.login;

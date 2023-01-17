@@ -22,6 +22,7 @@ public class AsynchronousClient
 
         ServersManager.instance.connectedServers.Add(tmpSH);
 
+        tmpSH.user.userID = ClientManager.instance.user.userID;
         tmpSH.Init();
         tmpSH.StartListening();
     }
