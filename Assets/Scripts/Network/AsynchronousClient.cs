@@ -13,17 +13,17 @@ public class AsynchronousClient
 
         ServerHandler tmpSH = new ServerHandler();
 
-        tmpSH.user = new NetworkUser();
-        tmpSH.user.userType = UserType.server;
+        NetworkUser user = new NetworkUser();
+        user.userType = UserType.server;
 
         //tmpSH.user.userIP = IPAddress.Parse("135.125.234.58").Address;
-        tmpSH.user.userIP = IPAddress.Parse("127.0.0.1").Address;
-        tmpSH.user.userPort = 11000;
+        user.userIP = IPAddress.Parse("127.0.0.1").Address;
+        user.userPort = 11000;
 
         ServersManager.instance.connectedServers.Add(tmpSH);
 
-        tmpSH.user.userID = ClientManager.instance.user.userID;
-        tmpSH.Init();
+        user.userID = ClientManager.instance.user.userID;
+        tmpSH.Init(user);
         tmpSH.StartListening();
     }
 }

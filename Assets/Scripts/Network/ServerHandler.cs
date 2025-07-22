@@ -9,13 +9,16 @@ using UnityEngine;
 [System.Serializable]
 public class ServerHandler
 {
-    public NetworkUser user;
+    public NetworkUser user
+    {  get; private set; }
+
     IPEndPoint remoteEP;
 
     public bool authenticated;
 
-    public void Init()
+    public void Init(NetworkUser user)
     {
+        this.user = user;
         remoteEP = new IPEndPoint(user.userIP, user.userPort);
         Debug.Log("EndPoint created : " + remoteEP);
     }
