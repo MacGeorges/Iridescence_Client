@@ -5,30 +5,25 @@ using UnityEngine;
 
 public class Experimental_ServersManager : MonoBehaviour
 {
-    //private List<Experimental_ServerConnection> serverConnections;
 
     private void Awake()
     {
-        ThreadingStuff.StartThreadingStuff();
-        //JoinServer(new IPAdress(127, 0, 0 ,1), ConnexionType.UDP);
+        ServerConnections.InitThreads();
+        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 80, ConnexionType.UDP));
     }
 
     private void OnApplicationQuit()
     {
-        ThreadingStuff.StopThreadingStuff();
+        ServerConnections.StopThreads();
     }
 
-    public bool JoinServer(IPAdress IPAdress, ConnexionType connexionType)
+    public void ConnectToServer(ServerConnectionInfo serverConnectionInfo)
     {
-        Experimental_ServerConnection newConnection = new Experimental_ServerConnection();
+        ServerConnections.ConnectToServer(serverConnectionInfo);
+    }
 
-        Experimental_ServerConnection.Init(IPAdress, connexionType);
-
-        //serverConnections.Add(newConnection);
-
-        Thread listenerThread = new Thread(Experimental_ServerConnection.StartConnection);
-        listenerThread.Start();
-
-        return true;
+    public void DisconnectFromServer(ServerConnectionInfo serverConnectionInfo)
+    {
+        ServerConnections.DisconnectFromServer(serverConnectionInfo);
     }
 }

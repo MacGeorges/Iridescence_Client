@@ -2,6 +2,21 @@ using UnityEngine;
 
 public class Experimental_NetworkStructsEnums{}
 
+public struct ServerConnectionInfo
+{
+    public IPAdress iPAdress;
+    public int port;
+    public ConnexionType connexionType;
+
+    public ServerConnectionInfo (IPAdress iPAdress, int port, ConnexionType connexionType)
+    {
+        this.iPAdress = iPAdress;
+        this.port = port;
+        this.connexionType = connexionType;
+    }
+}
+
+
 public enum ConnexionType
 {
     UDP,

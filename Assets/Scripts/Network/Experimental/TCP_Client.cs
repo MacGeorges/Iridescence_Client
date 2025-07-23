@@ -1,24 +1,21 @@
 using System;
 using System.Net.Sockets;
-using UnityEngine;
 
-public class TCP_Client : MonoBehaviour
+public class TCP_Client
 {
-    static void Connect(String server, String message)
+    public void ConnectAndListen(object connectionInfo)
     {
+        ServerConnectionInfo serverConnectionInfo = (ServerConnectionInfo)connectionInfo;
+
         try
         {
             // Create a TcpClient.
-            // Note, for this client to work you need to have a TcpServer
-            // connected to the same address as specified by the server, port
-            // combination.
-            Int32 port = 13000;
 
             // Prefer a using declaration to ensure the instance is Disposed later.
-            using TcpClient client = new TcpClient(server, port);
+            using TcpClient client = new TcpClient(serverConnectionInfo.iPAdress.ToString(), serverConnectionInfo.port);
 
             // Translate the passed message into ASCII and store it as a Byte array.
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("message");
 
             // Get a client stream for reading and writing.
             NetworkStream stream = client.GetStream();
@@ -26,7 +23,7 @@ public class TCP_Client : MonoBehaviour
             // Send the message to the connected TcpServer.
             stream.Write(data, 0, data.Length);
 
-            Console.WriteLine("Sent: {0}", message);
+            Console.WriteLine("Sent: {0}", "message");
 
             // Receive the server response.
 

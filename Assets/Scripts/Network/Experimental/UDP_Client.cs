@@ -2,17 +2,18 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using UnityEngine;
 
-public class UDP_Client : MonoBehaviour
+public class UDP_Client
 {
-    void Connect()
+    public void ConnectAndListen(object connectionInfo)
     {
+        ServerConnectionInfo serverConnectionInfo = (ServerConnectionInfo)connectionInfo;
+
         // This constructor arbitrarily assigns the local port number.
         UdpClient udpClient = new UdpClient(11000);
         try
         {
-            udpClient.Connect("www.contoso.com", 11000);
+            udpClient.Connect(serverConnectionInfo.iPAdress.ToString(), serverConnectionInfo.port);
 
             // Sends a message to the host to which you have connected.
             Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
