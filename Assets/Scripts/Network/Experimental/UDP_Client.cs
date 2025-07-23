@@ -26,10 +26,8 @@ public class UDP_Client
             byte[] data = client.Receive(ref remoteEP);
             string message = Encoding.ASCII.GetString(data);
 
-            //Move this to handler
             if (message.Contains("<EOR>"))
             {
-
                 callback.Invoke(message.Replace("<EOR>", ""));
             }
         }

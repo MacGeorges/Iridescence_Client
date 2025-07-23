@@ -17,6 +17,8 @@ public class Experimental_ServersManager : MonoBehaviour
     {
         Debug.Log("Receiving message : " + message);
         NetworkRequest networkRequest = JsonUtility.FromJson<NetworkRequest>(message);
+
+        ServerHandler.HandleRequest(networkRequest);
     }
 
     private void OnApplicationQuit()

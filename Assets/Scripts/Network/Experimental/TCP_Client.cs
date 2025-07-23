@@ -29,10 +29,8 @@ public class TCP_Client
             int bytes = stream.Read(data, 0, data.Length);
             String message = Encoding.ASCII.GetString(data, 0, bytes);
 
-            //Move this to handler
             if (message.Contains("<EOR>"))
             {
-
                 callback.Invoke(message.Replace("<EOR>", ""));
             }
         }

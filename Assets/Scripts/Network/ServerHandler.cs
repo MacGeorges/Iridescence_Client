@@ -60,7 +60,7 @@ public class ServerHandler
         AsynchronousClient.client.Send(byteData, byteData.Length, remoteEP);
     }
 
-    private void HandleRequest(NetworkRequest request)
+    public static void HandleRequest(NetworkRequest request)
     {
         //Debug.Log("Recieved request " + request.requestType);
         //Debug.Log("Serialized Data : " + request.serializedRequest);
