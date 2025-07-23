@@ -1,6 +1,27 @@
+using System;
+using System.Net;
+using System.Threading;
 using UnityEngine;
 
 public class Experimental_NetworkStructsEnums{}
+
+public struct ServerConnection
+{
+    public ServerConnectionInfo serverConnectionInfo;
+    public Thread thread;
+    public UDP_Client udpClient;
+    public TCP_Client tcpClient;
+    public Action<string> callback;
+
+    public ServerConnection(ServerConnectionInfo serverConnectionInfo, Thread thread, UDP_Client udpClient, TCP_Client tcpClient, Action<string> callback)
+    {
+        this.serverConnectionInfo = serverConnectionInfo;
+        this.thread = thread;
+        this.udpClient = udpClient;
+        this.tcpClient = tcpClient;
+        this.callback = callback;
+    }
+}
 
 public struct ServerConnectionInfo
 {
@@ -13,6 +34,20 @@ public struct ServerConnectionInfo
         this.iPAdress = iPAdress;
         this.port = port;
         this.connexionType = connexionType;
+    }
+
+    public static bool operator ==(ServerConnectionInfo sci1, ServerConnectionInfo sci2)
+    {
+        return sci1.iPAdress.ToString() == sci2.iPAdress.ToString() &&
+            sci1.port == sci2.port &&
+            sci1.connexionType == sci2.connexionType;
+    }
+
+    public static bool operator !=(ServerConnectionInfo sci1, ServerConnectionInfo sci2)
+    {
+        return sci1.iPAdress.ToString() != sci2.iPAdress.ToString() ||
+            sci1.port != sci2.port ||
+            sci1.connexionType != sci2.connexionType;
     }
 }
 

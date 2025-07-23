@@ -1,57 +1,82 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
+//Create one thread per connection
+
 class ServerConnections
 {
-    public static Dictionary<ServerConnectionInfo, Thread> threads;
+    public static List<ServerConnection> connections;
 
-    public static void InitThreads()
+    public static void Init()
     {
-        threads = new Dictionary<ServerConnectionInfo, Thread>();
+        connections = new List<ServerConnection>();
     }
 
-    public static void ConnectToServer(ServerConnectionInfo serverConnectionInfo)
+    public static void ConnectToServer(ServerConnectionInfo serverConnectionInfo, Action<string> callback)
     {
         ServerConnections w = new ServerConnections();
-        Thread newThread = null;
+        Thread thread = null;
+
+        UDP_Client udpClient = null;
+        TCP_Client tcpClient = null;
+
+        ServerConnection serverConnection = new ServerConnection(serverConnectionInfo, null, null, null, callback);
 
         switch (serverConnectionInfo.connexionType)
         {
             case ConnexionType.UDP:
-                UDP_Client udp_Client = new UDP_Client();
-                newThread = new Thread(udp_Client.ConnectAndListen);
+                udpClient = new UDP_Client();
+                serverConnection.udpClient = udpClient;
+                udpClient.Init(serverConnection);
+                thread = new Thread(udpClient.Receive);
                 break;
             case ConnexionType.TCP:
-                TCP_Client tcp_Client = new TCP_Client();
-                newThread = new Thread(tcp_Client.ConnectAndListen);
+                tcpClient = new TCP_Client();
+                serverConnection.tcpClient = tcpClient;
+                tcpClient.Init(serverConnection);
+                thread = new Thread(tcpClient.Receive);
                 break;
         }
 
-        newThread.Name = serverConnectionInfo.iPAdress + " listener";
-        threads.Add(serverConnectionInfo, newThread);
+        serverConnection.thread = thread;
+        thread.Name = serverConnectionInfo.iPAdress + " listener";
 
-        newThread.Start(serverConnectionInfo);
+        connections.Add(serverConnection);
+        thread.Start();
     }
 
     public static void DisconnectFromServer(ServerConnectionInfo serverConnectionInfo)
     {
-        if (threads.TryGetValue(serverConnectionInfo, out Thread thread))
-        {
-            thread.Abort();
-        }
+        ServerConnection connection = connections.Find(c => c.serverConnectionInfo == serverConnectionInfo);
 
+        if (connection.thread != null)
+        {
+            Debug.Log("Disconnecting " + connection.serverConnectionInfo.iPAdress);
+
+            switch (connection.serverConnectionInfo.connexionType)
+            {
+                case ConnexionType.UDP:
+                    connection.udpClient.Disconnect();
+                    break;
+                case ConnexionType.TCP:
+                    connection.tcpClient.Disconnect();
+                    break;
+            }
+
+            connection.thread.Abort();
+        }
     }
 
-    public static void StopThreads()
+    public static void StopAllConnections()
     {
-        foreach (KeyValuePair<ServerConnectionInfo, Thread> thread in threads)
+        foreach (ServerConnection connection in connections)
         {
-            Debug.Log("Aborting " + thread.Value.Name);
-            thread.Value.Abort();
+            DisconnectFromServer(connection.serverConnectionInfo);
         }
 
         Debug.Log("All thread Stopped");

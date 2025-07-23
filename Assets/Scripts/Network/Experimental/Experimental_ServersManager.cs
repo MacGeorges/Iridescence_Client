@@ -8,18 +8,25 @@ public class Experimental_ServersManager : MonoBehaviour
 
     private void Awake()
     {
-        ServerConnections.InitThreads();
-        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 80, ConnexionType.UDP));
+        ServerConnections.Init();
+        //For testing
+        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 80, ConnexionType.UDP), TestCallback);
+    }
+
+    private void TestCallback(string message)
+    {
+        Debug.Log("Receiving message : " + message);
+        NetworkRequest networkRequest = JsonUtility.FromJson<NetworkRequest>(message);
     }
 
     private void OnApplicationQuit()
     {
-        ServerConnections.StopThreads();
+        ServerConnections.StopAllConnections();
     }
 
-    public void ConnectToServer(ServerConnectionInfo serverConnectionInfo)
+    public void ConnectToServer(ServerConnectionInfo serverConnectionInfo, Action<string> callback)
     {
-        ServerConnections.ConnectToServer(serverConnectionInfo);
+        ServerConnections.ConnectToServer(serverConnectionInfo, callback);
     }
 
     public void DisconnectFromServer(ServerConnectionInfo serverConnectionInfo)

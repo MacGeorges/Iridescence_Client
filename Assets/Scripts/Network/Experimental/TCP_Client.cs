@@ -1,8 +1,54 @@
 using System;
+using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using UnityEditor.PackageManager;
+using UnityEditor.VersionControl;
+using UnityEngine;
+using UnityEngine.tvOS;
 
 public class TCP_Client
 {
+    TcpClient client;
+    NetworkStream stream;
+    private Action<string> callback;
+
+    public void Init(ServerConnection serverConnection)
+    {
+        client = new TcpClient(serverConnection.serverConnectionInfo.iPAdress.ToString(), serverConnection.serverConnectionInfo.port);
+        stream = client.GetStream();
+        callback = serverConnection.callback;
+    }
+
+    public void Receive()
+    {
+        while (true)
+        {
+            byte[] data = new byte[256];
+
+            int bytes = stream.Read(data, 0, data.Length);
+            String message = Encoding.ASCII.GetString(data, 0, bytes);
+
+            //Move this to handler
+            if (message.Contains("<EOR>"))
+            {
+
+                callback.Invoke(message.Replace("<EOR>", ""));
+            }
+        }
+    }
+
+    public void Send(ServerConnectionInfo serverConnectionInfo, string message)
+    {
+        byte[] data = Encoding.ASCII.GetBytes(message);
+        stream.Write(data, 0, data.Length);
+    }
+
+    public void Disconnect()
+    {
+        client.Close();
+    }
+
     public void ConnectAndListen(object connectionInfo)
     {
         ServerConnectionInfo serverConnectionInfo = (ServerConnectionInfo)connectionInfo;
