@@ -12,19 +12,30 @@ public class UDP_Client
 
     public void Init(ServerConnection serverConnection)
     {
-        client = new UdpClient(serverConnection.serverConnectionInfo.port);
+        client = new UdpClient();
         IPAddress address = IPAddress.Parse(serverConnection.serverConnectionInfo.iPAdress.ToString());
-        //remoteEP = new IPEndPoint(address, serverConnectionInfo.port);
-        remoteEP = new IPEndPoint(IPAddress.Any, 0);
+        remoteEP = new IPEndPoint(address, serverConnection.serverConnectionInfo.port);
         callback = serverConnection.callback;
+        
+        //We don't need that as we send a message to the server before all, establishing connection.
+        //For listeners only, the connection needs to be explicitely started
+        //client.Connect(remoteEP);
     }
 
     public void Receive()
     {
+        Debug.Log("Start Listening");
+
+        //Send a login request to the server before listening
+        Send();
+
         while (true)
         {
+            Debug.Log("Listening " + client + " - " +remoteEP);
             byte[] data = client.Receive(ref remoteEP);
             string message = Encoding.ASCII.GetString(data);
+
+            Debug.Log("Message : " + message);
 
             if (message.Contains("<EOR>"))
             {
@@ -33,14 +44,12 @@ public class UDP_Client
         }
     }
 
-    public void Send(ServerConnectionInfo serverConnectionInfo)
+    public void Send()
     {
-        client.Connect(serverConnectionInfo.iPAdress.ToString(), serverConnectionInfo.port);
-
-        // Sends a message to the host to which you have connected.
+        // Sends a test message
         Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
 
-        client.Send(sendBytes, sendBytes.Length);
+        client.Send(sendBytes, sendBytes.Length, remoteEP);
     }
 
     public void Disconnect()
