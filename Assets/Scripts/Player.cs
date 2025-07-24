@@ -29,9 +29,15 @@ public class Player : MonoBehaviour
 
             request.serializedRequest = JsonUtility.ToJson(newPlayerActionRequest);
 
-            foreach (ServerHandler connectedServer in ServersManager.instance.connectedServers)
+            //Needs to refactorize that
+            /*foreach (ServerHandler connectedServer in ServersManager.instance.connectedServers)
             {
                 connectedServer.Send(request);
+            }*/
+
+            foreach(ServerConnection serverConnection in ServerConnections.connections)
+            {
+                serverConnection.udpClient.Send(request);
             }
         }
 

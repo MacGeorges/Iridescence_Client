@@ -17,7 +17,7 @@ class ServerConnections
         connections = new List<ServerConnection>();
     }
 
-    public static void ConnectToServer(ServerConnectionInfo serverConnectionInfo, Action<string> callback)
+    public static void ConnectToServer(ServerConnection serverConnection)
     {
         ServerConnections w = new ServerConnections();
         Thread thread = null;
@@ -25,9 +25,7 @@ class ServerConnections
         UDP_Client udpClient = null;
         TCP_Client tcpClient = null;
 
-        ServerConnection serverConnection = new ServerConnection(serverConnectionInfo, null, null, null, callback);
-
-        switch (serverConnectionInfo.connexionType)
+        switch (serverConnection.connexionType)
         {
             case ConnexionType.UDP:
                 udpClient = new UDP_Client();
@@ -44,31 +42,30 @@ class ServerConnections
         }
 
         serverConnection.thread = thread;
-        thread.Name = serverConnectionInfo.iPAdress + " listener";
+        thread.Name = serverConnection.networkUser.userIP + " listener";
 
         connections.Add(serverConnection);
         thread.Start();
     }
 
-    public static void DisconnectFromServer(ServerConnectionInfo serverConnectionInfo)
+    public static void DisconnectFromServer(ServerConnection serverConnection)
     {
-        ServerConnection connection = connections.Find(c => c.serverConnectionInfo == serverConnectionInfo);
-
-        if (connection.thread != null)
+        if (serverConnection.thread != null)
         {
-            Debug.Log("Disconnecting " + connection.serverConnectionInfo.iPAdress);
+            Debug.Log("Disconnecting " + serverConnection.networkUser.userIP);
 
-            switch (connection.serverConnectionInfo.connexionType)
+            //Maybe create parent class to avoid that
+            switch (serverConnection.connexionType)
             {
                 case ConnexionType.UDP:
-                    connection.udpClient.Disconnect();
+                    serverConnection.udpClient.Disconnect();
                     break;
                 case ConnexionType.TCP:
-                    connection.tcpClient.Disconnect();
+                    serverConnection.tcpClient.Disconnect();
                     break;
             }
 
-            connection.thread.Abort();
+            serverConnection.thread.Abort();
         }
     }
 
@@ -76,7 +73,7 @@ class ServerConnections
     {
         foreach (ServerConnection connection in connections)
         {
-            DisconnectFromServer(connection.serverConnectionInfo);
+            DisconnectFromServer(connection);
         }
 
         Debug.Log("All thread Stopped");

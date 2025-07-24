@@ -13,7 +13,7 @@ public class ClientManager : MonoBehaviour
     {
         instance = this;
 
-        Thread listenerThread = new Thread(AsynchronousClient.StartClient);
-        listenerThread.Start();
+        //Thread listenerThread = new Thread(AsynchronousClient.StartClient);
+        //listenerThread.Start();
     }
 }

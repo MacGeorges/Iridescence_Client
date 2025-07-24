@@ -15,9 +15,10 @@ public class TCP_Client
 
     public void Init(ServerConnection serverConnection)
     {
-        client = new TcpClient(serverConnection.serverConnectionInfo.iPAdress.ToString(), serverConnection.serverConnectionInfo.port);
+        //client = new TcpClient(serverConnection.networkRequest.sender.userIP.ToString(), serverConnection.networkRequest.sender.userPort);
+        client = new TcpClient();
         stream = client.GetStream();
-        callback = serverConnection.callback;
+        //callback = serverConnection.callback;
     }
 
     public void Receive()

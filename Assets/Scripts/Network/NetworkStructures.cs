@@ -18,6 +18,20 @@ public struct NetworkRequest
         requestType = newRequestType;
         serializedRequest = requestContent;
     }
+
+    public static bool operator ==(NetworkRequest nr1, NetworkRequest nr2)
+    {
+        return (nr1.sender == nr2.sender &&
+            nr1.requestType == nr2.requestType &&
+            nr1.serializedRequest == nr2.serializedRequest);
+    }
+
+    public static bool operator !=(NetworkRequest nr1, NetworkRequest nr2)
+    {
+        return (nr1.sender != nr2.sender ||
+            nr1.requestType != nr2.requestType ||
+            nr1.serializedRequest != nr2.serializedRequest);
+    }
 }
 
 [Serializable]

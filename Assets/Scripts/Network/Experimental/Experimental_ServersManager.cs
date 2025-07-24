@@ -1,24 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using UnityEngine;
 
 public class Experimental_ServersManager : MonoBehaviour
 {
 
-    private void Awake()
+    private void Start()
     {
         ServerConnections.Init();
         //For testing
-        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 11000, ConnexionType.UDP), TestCallback);
-    }
+        NetworkUser user = new NetworkUser();
+        user.userType = UserType.server;
+        user.userIP = IPAddress.Parse("127.0.0.1").Address;
+        user.userPort = 11000;
 
-    private void TestCallback(string message)
-    {
-        Debug.Log("Receiving message : " + message);
-        NetworkRequest networkRequest = JsonUtility.FromJson<NetworkRequest>(message);
-
-        ServerHandler.HandleRequest(networkRequest);
+        ConnectToServer(new ServerConnection(user, null, ConnexionType.UDP, null, null));
     }
 
     private void OnApplicationQuit()
@@ -26,13 +24,13 @@ public class Experimental_ServersManager : MonoBehaviour
         ServerConnections.StopAllConnections();
     }
 
-    public void ConnectToServer(ServerConnectionInfo serverConnectionInfo, Action<string> callback)
+    public void ConnectToServer(ServerConnection serverConnection)
     {
-        ServerConnections.ConnectToServer(serverConnectionInfo, callback);
+        ServerConnections.ConnectToServer(serverConnection);
     }
 
-    public void DisconnectFromServer(ServerConnectionInfo serverConnectionInfo)
+    public void DisconnectFromServer(ServerConnection serverConnection)
     {
-        ServerConnections.DisconnectFromServer(serverConnectionInfo);
+        ServerConnections.DisconnectFromServer(serverConnection);
     }
 }
