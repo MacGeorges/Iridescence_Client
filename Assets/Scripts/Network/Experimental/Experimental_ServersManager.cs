@@ -10,7 +10,7 @@ public class Experimental_ServersManager : MonoBehaviour
     {
         ServerConnections.Init();
         //For testing
-        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 80, ConnexionType.UDP), TestCallback);
+        ConnectToServer(new ServerConnectionInfo(new IPAdress(127, 0, 0, 1), 11000, ConnexionType.UDP), TestCallback);
     }
 
     private void TestCallback(string message)
