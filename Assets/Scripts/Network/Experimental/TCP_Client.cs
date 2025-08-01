@@ -16,7 +16,7 @@ public class TCP_Client
     public void Init(ServerConnection serverConnection)
     {
         //client = new TcpClient(serverConnection.networkRequest.sender.userIP.ToString(), serverConnection.networkRequest.sender.userPort);
-        client = new TcpClient();
+        client = new TcpClient(serverConnection.networkUser.userIP.ToString(), serverConnection.networkUser.userPort);
         stream = client.GetStream();
         //callback = serverConnection.callback;
     }
@@ -37,9 +37,10 @@ public class TCP_Client
         }
     }
 
-    public void Send(ServerConnectionInfo serverConnectionInfo, string message)
+    public void Send(NetworkRequest request)
     {
-        byte[] data = Encoding.ASCII.GetBytes(message);
+        byte[] data = Encoding.ASCII.GetBytes(JsonUtility.ToJson(request) + "<EOR>");
+
         stream.Write(data, 0, data.Length);
     }
 
@@ -50,54 +51,41 @@ public class TCP_Client
 
     public void ConnectAndListen(object connectionInfo)
     {
-        ServerConnectionInfo serverConnectionInfo = (ServerConnectionInfo)connectionInfo;
+        // Translate the passed message into ASCII and store it as a Byte array.
+        Byte[] data = System.Text.Encoding.ASCII.GetBytes("message");
 
-        try
+        // Get a client stream for reading and writing.
+        NetworkStream stream = client.GetStream();
+
+        // Send the message to the connected TcpServer.
+        stream.Write(data, 0, data.Length);
+
+        Console.WriteLine("Sent: {0}", "message");
+
+        // Receive the server response.
+
+        while (true)
         {
-            // Create a TcpClient.
-
-            // Prefer a using declaration to ensure the instance is Disposed later.
-            using TcpClient client = new TcpClient(serverConnectionInfo.iPAdress.ToString(), serverConnectionInfo.port);
-
-            // Translate the passed message into ASCII and store it as a Byte array.
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes("message");
-
-            // Get a client stream for reading and writing.
-            NetworkStream stream = client.GetStream();
-
-            // Send the message to the connected TcpServer.
-            stream.Write(data, 0, data.Length);
-
-            Console.WriteLine("Sent: {0}", "message");
-
-            // Receive the server response.
-
             // Buffer to store the response bytes.
             data = new Byte[256];
 
-            // String to store the response ASCII representation.
-            String responseData = String.Empty;
-
             // Read the first batch of the TcpServer response bytes.
-            Int32 bytes = stream.Read(data, 0, data.Length);
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            Console.WriteLine("Received: {0}", responseData);
+            //int bytes = stream.Read(data, 0, data.Length);
+            //string responseData = Encoding.ASCII.GetString(data, 0, bytes);
 
-            // Explicit close is not necessary since TcpClient.Dispose() will be
-            // called automatically.
-            // stream.Close();
-            // client.Close();
-        }
-        catch (ArgumentNullException e)
-        {
-            Console.WriteLine("ArgumentNullException: {0}", e);
-        }
-        catch (SocketException e)
-        {
-            Console.WriteLine("SocketException: {0}", e);
-        }
+            string message = Encoding.ASCII.GetString(data);
 
-        Console.WriteLine("\n Press Enter to continue...");
-        Console.Read();
+            Debug.Log("Message : " + message);
+
+            if (message.Contains("<EOR>"))
+            {
+                ServerHandler.HandleRequest(JsonUtility.FromJson<NetworkRequest>(message.Replace("<EOR>", "")));
+            }
+        }
+        
+        // Explicit close is not necessary since TcpClient.Dispose() will be
+        // called automatically.
+        // stream.Close();
+        // client.Close();
     }
 }

@@ -19,7 +19,6 @@ class ServerConnections
 
     public static void ConnectToServer(ServerConnection serverConnection)
     {
-        ServerConnections w = new ServerConnections();
         Thread thread = null;
 
         UDP_Client udpClient = null;
